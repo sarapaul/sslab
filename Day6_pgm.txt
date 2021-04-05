@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<conio.h>
+int mutex=1,empty=5,full=0,buffersize=5,in=0,out=0,buffer[5]={-1,-1,-1,-1,-1};
+int wait(int s)
+{
+	while(s<=0);
+	return --s;
+}
+int signal(int s)
+{       s=s+1;
+	return s;
+}
+void producer()
+{	int np,i;
+	empty=wait(empty);
+	mutex=wait(mutex);
+	printf("Enter item:\t");
+	scanf("%d",&np);
+	buffer[in]=np;
+	in=(in+1)%buffersize;
+	printf("Producer produced item %d.",np);
+	mutex=signal(mutex);
+	full=signal(full);
+	for(i=0;i<5;i++)
+	{ if(buffer[i]!=-1){
+	printf("%d\t",buffer[i]);}
+	}
+}
+void consumer ()
+{	int nc,i;
+	full=wait(full);
+	mutex=wait(mutex);
+	nc=buffer[out];
+	printf("Consumer consumed item %d.\n",nc);
+	buffer[out]=-1;
+	out=(out+1)%buffersize;
+	mutex=signal(mutex);
+	empty=signal(empty);
+	for(i=0;i<5;i++)
+	{if(buffer[i]!=-1){
+	printf("%d\t",buffer[i]);}
+	else{printf("\t");}
+	}
+}
+void main()
+{
+	int i=1,ch;
+	printf("SARA PAUL DAY6 ");
+	do
+	{
+	printf("\n1.Producer\n2.Consumer\nEnter Choice:\t");
+	scanf("%d",&ch);
+	switch(ch)
+	{
+		case 1: printf("\nPRODUCER");
+			if(mutex==1 && empty!=0)
+			{producer();}
+			else
+			{printf("\nBUFFER FULL");
+			}
+			break;
+		case 2: printf("\nCONSUMER");
+			if(mutex==1 && full!=0)
+			{consumer();}
+			else{printf("\nBUFFER EMPTY");}
+			break;
+		default:printf("WRONG CHOICE");
+			exit(0);
+	}
+	printf("\nDo you want to do more operations(1-yes/0-no): ");
+	scanf("%d",&i);
+	}
+	while(i==1);
+	getch();
+}
